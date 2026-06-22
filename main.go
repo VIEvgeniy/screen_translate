@@ -1,20 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"strings"
-	"time"
-)
-
-const (
-	langFrom = "en"
-	langTo   = "ru"
 )
 
 func translateText(text string) string {
@@ -22,34 +12,12 @@ func translateText(text string) string {
 	if text == "" {
 		return ""
 	}
-
-	params := url.Values{}
-	params.Set("q", text)
-	params.Set("langpair", langFrom+"|"+langTo)
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Get("https://api.mymemory.translated.net/get?" + params.Encode())
+	cmd := exec.Command("trans", "-brief", "en:ru", text)
+	out, err := cmd.Output()
 	if err != nil {
-		return fmt.Sprintf("[Ошибка сети: %v]", err)
+		return fmt.Sprintf("[Ошибка перевода: %v]", err)
 	}
-	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
-
-	var data struct {
-		ResponseStatus json.RawMessage `json:"responseStatus"`
-		ResponseData   struct {
-			TranslatedText string `json:"translatedText"`
-		} `json:"responseData"`
-	}
-	if err := json.Unmarshal(body, &data); err != nil {
-		return fmt.Sprintf("[Ошибка парсинга: %v]", err)
-	}
-	// responseStatus может быть числом 200 или строкой "200"
-	status := strings.Trim(string(data.ResponseStatus), `"`)
-	if status == "200" {
-		return data.ResponseData.TranslatedText
-	}
-	return fmt.Sprintf("[Ошибка перевода: %s]", status)
+	return strings.TrimSpace(string(out))
 }
 
 func takeScreenshot() (string, error) {

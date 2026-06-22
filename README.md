@@ -8,7 +8,7 @@
 2. Курсор превращается в прицел — выделяешь область с текстом
 3. `gnome-screenshot` делает скриншот области
 4. `tesseract` распознаёт текст (OCR, локально)
-5. Текст отправляется на [MyMemory](https://mymemory.translated.net/) — бесплатный переводчик без API-ключа
+5. `translate-shell` переводит текст через Google Translate
 6. Результат появляется в окне `zenity`
 
 ## Требования
@@ -26,13 +26,13 @@ bash install.sh
 ### Debian / Ubuntu
 ```bash
 sudo apt install tesseract-ocr tesseract-ocr-eng tesseract-ocr-rus \
-    gnome-screenshot zenity
+    gnome-screenshot zenity translate-shell
 ```
 
 ### Fedora
 ```bash
 sudo dnf install tesseract tesseract-langpack-eng tesseract-langpack-rus \
-    gnome-screenshot zenity
+    gnome-screenshot zenity translate-shell
 ```
 
 ## Сборка
@@ -87,5 +87,4 @@ gsettings set ${BASE}:${PATH} command '/путь/screen_translate -short'
 ## Ограничения
 
 - OCR работает лучше всего с чётким экранным текстом (интерфейсы, субтитры, документы)
-- MyMemory бесплатно даёт ~5000 слов в день без регистрации
 - Требует подключения к интернету для перевода (OCR работает офлайн)

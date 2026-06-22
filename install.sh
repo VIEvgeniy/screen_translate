@@ -9,6 +9,7 @@ sudo apt-get install -y \
     tesseract-langpack-ru \
     gnome-screenshot \
     zenity \
+    translate-shell \
     golang
 
 echo ""
