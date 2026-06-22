@@ -36,7 +36,7 @@ func translateText(text string) string {
 	body, _ := io.ReadAll(resp.Body)
 
 	var data struct {
-		ResponseStatus int `json:"responseStatus"`
+		ResponseStatus json.RawMessage `json:"responseStatus"`
 		ResponseData   struct {
 			TranslatedText string `json:"translatedText"`
 		} `json:"responseData"`
@@ -44,10 +44,12 @@ func translateText(text string) string {
 	if err := json.Unmarshal(body, &data); err != nil {
 		return fmt.Sprintf("[Ошибка парсинга: %v]", err)
 	}
-	if data.ResponseStatus == 200 {
+	// responseStatus может быть числом 200 или строкой "200"
+	status := strings.Trim(string(data.ResponseStatus), `"`)
+	if status == "200" {
 		return data.ResponseData.TranslatedText
 	}
-	return fmt.Sprintf("[Ошибка перевода: %d]", data.ResponseStatus)
+	return fmt.Sprintf("[Ошибка перевода: %s]", status)
 }
 
 func takeScreenshot() (string, error) {
