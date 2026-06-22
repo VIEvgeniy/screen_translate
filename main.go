@@ -67,6 +67,12 @@ func takeScreenshot() (string, error) {
 		os.Remove(path)
 		return "", fmt.Errorf("gnome-screenshot: %v", err)
 	}
+	// При отмене (ESC) gnome-screenshot создаёт пустой файл
+	info, err := os.Stat(path)
+	if err != nil || info.Size() == 0 {
+		os.Remove(path)
+		return "", nil
+	}
 	return path, nil
 }
 func ocrImage(imgPath string) (string, error) {
@@ -109,6 +115,9 @@ func main() {
 	if err != nil {
 		showError(fmt.Sprintf("Ошибка скриншота:\n%v", err))
 		os.Exit(1)
+	}
+	if imgPath == "" {
+		os.Exit(0) // пользователь отменил
 	}
 	defer os.Remove(imgPath)
 
